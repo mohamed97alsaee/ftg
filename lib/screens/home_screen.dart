@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:free_to_play_challange/models/game_model.dart';
 import 'package:free_to_play_challange/screens/single_game_screen.dart';
-import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+
+import '../providers/games_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,83 +19,70 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int navIndex = 0;
 
-  List<GameModel> games = [];
-
-  fetchGames() async {
-    final response = await http.get(Uri.parse(navIndex == 0
-        ? 'https://www.freetogame.com/api/games'
-        : navIndex == 1
-            ? 'https://www.freetogame.com/api/games?platform=pc'
-            : 'https://www.freetogame.com/api/games?platform=browser'));
-
-    if (response.statusCode == 200) {
-      for (var x in json.decode(response.body)) {
-        games.add(GameModel.fromJson(x));
-      }
-      setState(() {});
-    } else {
-      print("FAILED");
-    }
-  }
-
   @override
   void initState() {
-    fetchGames();
+    Provider.of<GamesProvider>(context, listen: false).getGames();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final gamesProviderFunctions = Provider.of<GamesProvider>(context);
     return Scaffold(
-      body: GridView.builder(
-          itemCount: games.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-          ),
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    CupertinoPageRoute(
-                        builder: (context) =>
-                            SingleGameScreen(gameId: games[index].id)));
-              },
-              child: GridTile(
-                header: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: FaIcon(
-                    games[index].platform.toLowerCase().contains('windows')
-                        ? FontAwesomeIcons.windows
-                        : FontAwesomeIcons.weebly,
-                    color: Colors.white,
-                  ),
-                ),
-                footer: Container(
-                  color: Colors.amber.withOpacity(0.5),
-                  child: Padding(
+      body:
+          Consumer<GamesProvider>(builder: (context, gamesProviderListener, _) {
+        return GridView.builder(
+            itemCount: gamesProviderListener.games.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+            ),
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (context) => SingleGameScreen(
+                              gameId: gamesProviderListener.games[index].id)));
+                },
+                child: GridTile(
+                  header: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      games[index].title,
-                      style: const TextStyle(color: Colors.white),
+                    child: FaIcon(
+                      gamesProviderListener.games[index].platform
+                              .toLowerCase()
+                              .contains('windows')
+                          ? FontAwesomeIcons.windows
+                          : FontAwesomeIcons.weebly,
+                      color: Colors.white,
                     ),
                   ),
+                  footer: Container(
+                    color: Colors.amber.withOpacity(0.5),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        gamesProviderListener.games[index].title,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  child: Image.network(
+                    gamesProviderListener.games[index].thumbnail,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    },
+                  ),
                 ),
-                child: Image.network(
-                  games[index].thumbnail,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  },
-                ),
-              ),
-            );
-          }),
+              );
+            });
+      }),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: navIndex,
         items: const [
@@ -109,10 +98,10 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: ((value) {
           setState(() {
             navIndex = value;
-            games.clear();
+            gamesProviderFunctions.getGames();
           });
 
-          fetchGames();
+          // fetchGames();
         }),
       ),
       // floatingActionButton: FloatingActionButton(

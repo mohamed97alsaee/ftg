@@ -14,7 +14,7 @@ class SingleGameScreen extends StatefulWidget {
 class _SingleGameScreenState extends State<SingleGameScreen> {
   late SingleGameModel singleGameModel;
   bool isLoading = false;
-
+  bool expanDec = false;
   fetchSingleGame() async {
     setState(() {
       isLoading = true;
@@ -47,43 +47,85 @@ class _SingleGameScreenState extends State<SingleGameScreen> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: isLoading
-          ? const CircularProgressIndicator()
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Container(
-                    decoration: const BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(25),
-                            bottomRight: Radius.circular(25))),
-                    height: size.height * 0.33,
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(25),
-                          bottomRight: Radius.circular(25)),
-                      child: Image.network(
-                        singleGameModel.thumbnail,
-                        fit: BoxFit.cover,
+                  Stack(
+                    children: [
+                      Container(
+                        decoration: const BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(25),
+                                bottomRight: Radius.circular(25))),
+                        height: size.height * 0.33,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(25),
+                              bottomRight: Radius.circular(25)),
+                          child: Image.network(
+                            singleGameModel.thumbnail,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
-                    ),
+                      Positioned(
+                        right: 10,
+                        top: 10,
+                        child: SafeArea(
+                          child: IconButton(
+                              onPressed: () {},
+                              icon: const Icon(
+                                Icons.share,
+                                color: Colors.white,
+                              )),
+                        ),
+                      ),
+                    ],
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          singleGameModel.title,
-                          style: const TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.bold),
+                        Align(
+                          alignment: Alignment.topCenter,
+                          child: Text(
+                            singleGameModel.title,
+                            style: const TextStyle(
+                                fontSize: 22, fontWeight: FontWeight.bold),
+                          ),
                         ),
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 12),
                           child: Divider(),
                         ),
-                        Text(
-                          singleGameModel.shortDescription,
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              expanDec = !expanDec;
+                            });
+                          },
+                          child: SizedBox(
+                            width: size.width,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    singleGameModel.shortDescription,
+                                    maxLines: expanDec ? 10 : 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                if (!expanDec)
+                                  const Text(
+                                    "see more",
+                                  )
+                              ],
+                            ),
+                          ),
                         ),
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 12),
