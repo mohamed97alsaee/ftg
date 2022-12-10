@@ -62,6 +62,25 @@ class _HomeScreenState extends State<HomeScreen> {
                             SingleGameScreen(gameId: games[index].id)));
               },
               child: GridTile(
+                header: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: FaIcon(
+                    games[index].platform.toLowerCase().contains('windows')
+                        ? FontAwesomeIcons.windows
+                        : FontAwesomeIcons.weebly,
+                    color: Colors.white,
+                  ),
+                ),
+                footer: Container(
+                  color: Colors.amber.withOpacity(0.5),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      games[index].title,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
                 child: Image.network(
                   games[index].thumbnail,
                   fit: BoxFit.cover,

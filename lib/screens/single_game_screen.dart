@@ -46,108 +46,106 @@ class _SingleGameScreenState extends State<SingleGameScreen> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      body: Center(
-        child: isLoading
-            ? const CircularProgressIndicator()
-            : SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      decoration: const BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(25),
-                              bottomRight: Radius.circular(25))),
-                      height: size.height * 0.33,
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.only(
+      body: isLoading
+          ? const CircularProgressIndicator()
+          : SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                        color: Colors.green,
+                        borderRadius: BorderRadius.only(
                             bottomLeft: Radius.circular(25),
-                            bottomRight: Radius.circular(25)),
-                        child: Image.network(
-                          singleGameModel.thumbnail,
-                          fit: BoxFit.cover,
+                            bottomRight: Radius.circular(25))),
+                    height: size.height * 0.33,
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(25),
+                          bottomRight: Radius.circular(25)),
+                      child: Image.network(
+                        singleGameModel.thumbnail,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          singleGameModel.title,
+                          style: const TextStyle(
+                              fontSize: 22, fontWeight: FontWeight.bold),
                         ),
-                      ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          child: Divider(),
+                        ),
+                        Text(
+                          singleGameModel.shortDescription,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          child: Divider(),
+                        ),
+                        Text(
+                          "Publisher : ${singleGameModel.publisher}",
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          child: Divider(),
+                        ),
+                        Text(
+                          "Platform : ${singleGameModel.platform}",
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          child: Divider(),
+                        ),
+                        Text(
+                          "Developer : ${singleGameModel.developer}",
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          child: Divider(),
+                        ),
+                        GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
+                            ),
+                            itemCount: singleGameModel.screenshots.length,
+                            itemBuilder: ((context, index) {
+                              return GridTile(
+                                child: Image.network(
+                                  singleGameModel.screenshots[index].image,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  },
+                                ),
+                              );
+                            })),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          child: Divider(),
+                        ),
+                        Text(singleGameModel.description)
+                      ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          Text(
-                            singleGameModel.title,
-                            style: const TextStyle(
-                                fontSize: 22, fontWeight: FontWeight.bold),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12),
-                            child: Divider(),
-                          ),
-                          Text(
-                            singleGameModel.shortDescription,
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12),
-                            child: Divider(),
-                          ),
-                          Text(
-                            "Publisher : ${singleGameModel.publisher}",
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12),
-                            child: Divider(),
-                          ),
-                          Text(
-                            "Platform : ${singleGameModel.platform}",
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12),
-                            child: Divider(),
-                          ),
-                          Text(
-                            "Developer : ${singleGameModel.developer}",
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12),
-                            child: Divider(),
-                          ),
-                          GridView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10,
-                              ),
-                              itemCount: singleGameModel.screenshots.length,
-                              itemBuilder: ((context, index) {
-                                return GridTile(
-                                  child: Image.network(
-                                    singleGameModel.screenshots[index].image,
-                                    fit: BoxFit.cover,
-                                    loadingBuilder:
-                                        (context, child, loadingProgress) {
-                                      if (loadingProgress == null) return child;
-                                      return const Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    },
-                                  ),
-                                );
-                              })),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12),
-                            child: Divider(),
-                          ),
-                          Text(singleGameModel.description)
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-      ),
+            ),
     );
   }
 }
