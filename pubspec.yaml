@@ -40,8 +40,8 @@ dependencies:
   http:
   provider:
   path_provider:
+  shared_preferences:
 
-  
 dev_dependencies:
   flutter_test:
     sdk: flutter

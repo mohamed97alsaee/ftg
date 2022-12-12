@@ -14,10 +14,11 @@ class GamesProvider with ChangeNotifier {
     final response =
         await http.get(Uri.parse('https://www.freetogame.com/api/games'));
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 && response.toString() != 'null') {
       final data = json.decode(response.body) as List;
       setGames(data.map((e) => GameModel.fromJson(e)).toList());
     } else {
+      // print("ERROR HERE : " + response.body.toString());
       isFailed = true;
       notifyListeners();
     }
@@ -29,4 +30,9 @@ class GamesProvider with ChangeNotifier {
     games = data;
     notifyListeners();
   }
+
+  // addNewGame(GameModel game) {
+  //   games.add(game);
+  //   notifyListeners();
+  // }
 }

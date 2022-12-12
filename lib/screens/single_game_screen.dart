@@ -28,7 +28,7 @@ class _SingleGameScreenState extends State<SingleGameScreen> {
         singleGameModel = SingleGameModel.fromJson(json.decode(response.body));
       });
     } else {
-      print("FAILED");
+      // print("FAILED");
     }
 
     setState(() {
