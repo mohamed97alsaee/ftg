@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:free_to_play_challange/main.dart';
+import 'package:free_to_play_challange/providers/auth_provider.dart';
 import 'package:free_to_play_challange/providers/them_provider.dart';
-import 'package:free_to_play_challange/screens/single_game_screen.dart';
+import 'package:free_to_play_challange/screens/main_screens/single_game_screen.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/games_provider.dart';
+import '../../providers/games_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,7 +21,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    Provider.of<GamesProvider>(context, listen: false).getGames();
+    Provider.of<GamesProvider>(context, listen: false)
+        .getGames('https://www.freetogame.com/api/games');
     Provider.of<ThemeProvider>(context, listen: false).getMode();
 
     super.initState();
@@ -29,7 +32,40 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final gamesProviderFunctions = Provider.of<GamesProvider>(context);
     final themeProviderFunctions = Provider.of<ThemeProvider>(context);
+    final authProviderFunctions = Provider.of<AuthProvider>(context);
+
     return Scaffold(
+      drawer: Drawer(
+        child: SafeArea(
+          child: Column(
+            children: [
+              const ListTile(
+                title: Text('Profile'),
+                leading: Icon(Icons.person),
+              ),
+              const ListTile(
+                title: Text('darkMode'),
+                leading: Icon(Icons.dark_mode),
+              ),
+              ListTile(
+                onTap: () async {
+                  bool x = await authProviderFunctions.logout();
+                  if (x) {
+                    // ignore: use_build_context_synchronously
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (context) => ScreenRouter()),
+                        (route) => false);
+                  }
+                },
+                title: Text('Logout'),
+                leading: Icon(Icons.exit_to_app),
+              ),
+            ],
+          ),
+        ),
+      ),
       appBar: AppBar(actions: [
         Consumer<ThemeProvider>(builder: (context, themeProvider, child) {
           return IconButton(
@@ -118,7 +154,11 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: ((value) {
           setState(() {
             navIndex = value;
-            gamesProviderFunctions.getGames();
+            gamesProviderFunctions.getGames(navIndex == 0
+                ? 'https://www.freetogame.com/api/games'
+                : navIndex == 1
+                    ? 'https://www.freetogame.com/api/games?platform=pc'
+                    : 'https://www.freetogame.com/api/games?platform=browser');
           });
 
           // fetchGames();

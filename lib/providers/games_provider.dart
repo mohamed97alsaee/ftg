@@ -8,11 +8,10 @@ class GamesProvider with ChangeNotifier {
   bool isLoading = false;
   bool isFailed = false;
 
-  getGames() async {
+  getGames(String url) async {
     isLoading = true;
     notifyListeners();
-    final response =
-        await http.get(Uri.parse('https://www.freetogame.com/api/games'));
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200 && response.toString() != 'null') {
       final data = json.decode(response.body) as List;
