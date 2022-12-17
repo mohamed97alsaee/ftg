@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -137,9 +139,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             backgroundColor: MaterialStateProperty.all(activeBtn
                                 ? Colors.deepPurple
                                 : Colors.deepPurple.withOpacity(0.2))),
-                        onPressed: () {
+                        onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            authProviderFunctions.register({
+                            List x = await authProviderFunctions.register({
                               "name": _nameController.text.toString(),
                               "phone": _phoneController.text.toString(),
                               "password": _passwordController.text.toString(),
@@ -149,6 +151,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               "device_name":
                                   _deviceNameController.text.toString()
                             });
+                            if (x.first) {
+                              var snackBar = SnackBar(content: Text(x.last));
+                              // ignore: use_build_context_synchronously
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                              Timer(const Duration(seconds: 3), () {
+                                Navigator.pop(context);
+                              });
+                              // ignore: use_build_context_synchronously
+                            } else {
+                              var snackBar = SnackBar(content: Text(x.last));
+                              // ignore: use_build_context_synchronously
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                              // ignore: use_build_context_synchronously
+                            }
                           }
                         },
                         child: const Text('Create Account')),
