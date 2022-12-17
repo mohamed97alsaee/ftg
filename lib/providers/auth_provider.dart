@@ -25,15 +25,42 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> login() async {
+  Future<List> login(Map<String, String> jsonBody) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('token', 'ABCD');
-    return true;
+
+    //  String? token = prefs.getString('token');
+    final response = await http.post(
+        Uri.parse(
+          "https://api.ha-k.ly/api/v1/client/auth/login",
+        ),
+        headers: {
+          "Accept": 'application/json',
+          "Content-Type": 'application/json',
+          // "Authorization":"Bearer $token"
+        },
+        body: json.encode(jsonBody));
+    isLoading = true;
+    notifyListeners();
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      prefs.setString('token', json.decode(response.body)['token']);
+      isLogedIn = true;
+      isLoading = false;
+      notifyListeners();
+      return [true, 'Login Successfully'];
+    }
+    //  else if (response.statusCode == 401) {
+    //   isLoading = false;
+    //   notifyListeners();
+    //   return [false, "Token Expired !"];
+    // }
+    else {
+      isLoading = false;
+      notifyListeners();
+      return [false, json.decode(response.body)['message']];
+    }
   }
 
-  // Future<bool>
-  register(Map<String, String> jsonBody) async {
-    
+  Future<List> register(Map<String, String> jsonBody) async {
     final response = await http.post(
         Uri.parse(
           "https://api.ha-k.ly/api/v1/client/auth/register",

@@ -70,8 +70,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         if (value!.isEmpty) {
                           return "enter phone number";
                         }
-                        if (value.length != 10) {
-                          return "Phone Number should be 10 digits";
+                        if (value.length != 9) {
+                          return "Phone Number should be 9 digits";
                         }
                         return null;
                       },
@@ -129,10 +129,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         return null;
                       }),
                     ),
-                    const SizedBox(
-                      height: 25,
-                    ),
-                    Text("REGISTER SCREEN"),
                     const SizedBox(
                       height: 25,
                     ),
